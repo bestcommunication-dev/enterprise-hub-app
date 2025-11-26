@@ -1,0 +1,355 @@
+{
+  "entities": {
+    "Client": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Client",
+      "type": "object",
+      "description": "Represents a client of the company.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Client entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the client."
+        },
+        "contactEmail": {
+          "type": "string",
+          "description": "The email address of the client contact person.",
+          "format": "email"
+        },
+        "contactPhone": {
+          "type": "string",
+          "description": "The phone number of the client contact person."
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the client."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "contactEmail"
+      ]
+    },
+    "Contract": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Contract",
+      "type": "object",
+      "description": "Represents a contract with a client.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Contract entity."
+        },
+        "clientId": {
+          "type": "string",
+          "description": "Reference to Client. (Relationship: Client 1:N Contract)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the contract.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the contract.",
+          "format": "date-time"
+        },
+        "terms": {
+          "type": "string",
+          "description": "The terms and conditions of the contract."
+        }
+      },
+      "required": [
+        "id",
+        "clientId",
+        "startDate",
+        "endDate",
+        "terms"
+      ]
+    },
+    "Commission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Commission",
+      "type": "object",
+      "description": "Represents a commission earned by an agent.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Commission entity."
+        },
+        "agentId": {
+          "type": "string",
+          "description": "Reference to User (Agent role). (Relationship: User 1:N Commission)"
+        },
+        "contractId": {
+          "type": "string",
+          "description": "Reference to Contract. (Relationship: Contract 1:N Commission)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of the commission."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date the commission was earned.",
+          "format": "date-time"
+        },
+        "isFlagged": {
+          "type": "boolean",
+          "description": "Indicates whether the commission has been flagged for review."
+        }
+      },
+      "required": [
+        "id",
+        "agentId",
+        "contractId",
+        "amount",
+        "date",
+        "isFlagged"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "roleId": {
+          "type": "string",
+          "description": "Reference to Role. (Relationship: Role 1:N User)"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email",
+        "roleId"
+      ]
+    },
+    "Role": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Role",
+      "type": "object",
+      "description": "Represents a role within the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Role entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the role (e.g., Admin, Back-Office, Agent)."
+        },
+        "permissionIds": {
+          "type": "array",
+          "description": "References to Permissions. (Relationship: Role 1:N Permission)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Permission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Permission",
+      "type": "object",
+      "description": "Represents a permission within the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Permission entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the permission (e.g., create_client, view_contract)."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Mail": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Mail",
+      "type": "object",
+      "description": "Represents an email to be sent by the Trigger Email extension.",
+      "properties": {
+        "to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "message": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string"
+            },
+            "html": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "subject",
+            "html"
+          ]
+        }
+      },
+      "required": [
+        "to",
+        "message"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/clients/{clientId}",
+        "definition": {
+          "entityName": "Client",
+          "schema": {
+            "$ref": "#/backend/entities/Client"
+          },
+          "description": "Stores client data. Back-Office and Admin can create and update clients. Agents can view clients.",
+          "params": [
+            {
+              "name": "clientId",
+              "description": "The unique identifier of the client."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/contracts/{contractId}",
+        "definition": {
+          "entityName": "Contract",
+          "schema": {
+            "$ref": "#/backend/entities/Contract"
+          },
+          "description": "Stores contract data. Back-Office and Admin can create and update contracts. Includes 'clientId' for relationship with Client.",
+          "params": [
+            {
+              "name": "contractId",
+              "description": "The unique identifier of the contract."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/commissions/{commissionId}",
+        "definition": {
+          "entityName": "Commission",
+          "schema": {
+            "$ref": "#/backend/entities/Commission"
+          },
+          "description": "Stores commissions data for each agent. Admins can view all commissions. Back-office can flag commissions.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user (agent)."
+            },
+            {
+              "name": "commissionId",
+              "description": "The unique identifier of the commission."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user data. Includes 'roleId' for role-based access control.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles/{roleId}",
+        "definition": {
+          "entityName": "Role",
+          "schema": {
+            "$ref": "#/backend/entities/Role"
+          },
+          "description": "Stores role definitions. Includes 'permissionIds' for permissions associated with each role.",
+          "params": [
+            {
+              "name": "roleId",
+              "description": "The unique identifier of the role."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/permissions/{permissionId}",
+        "definition": {
+          "entityName": "Permission",
+          "schema": {
+            "$ref": "#/backend/entities/Permission"
+          },
+          "description": "Stores permission definitions.",
+          "params": [
+            {
+              "name": "permissionId",
+              "description": "The unique identifier of the permission."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/mail/{mailId}",
+        "definition": {
+          "entityName": "Mail",
+          "schema": {
+            "$ref": "#/backend/entities/Mail"
+          },
+          "description": "Stores email documents for the Trigger Email extension. Allow create for any authenticated user.",
+          "params": [
+            {
+              "name": "mailId",
+              "description": "The unique identifier of the mail document."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support role-based access control (Admin, Back-Office, Agent) for the 'Enterprise Hub' application. The structure prioritizes authorization independence and QAPs (Rules are not Filters) to ensure secure and scalable data access. Role-based access control is enforced by leveraging dedicated collections for roles and permissions, and storing role assignments directly within the `users` collection. This design removes the necessity for custom claims and enables straightforward security rules based on the `request.auth.uid`. To ensure atomic operations, authorization context (such as role information) is denormalized where needed, avoiding `get()` calls in security rules.\n\nThe structure uses structural segregation (Homogeneous Security Posture) by keeping data with different access needs in separate collections. For instance, clients, contracts and commissions are stored in their own collections.\n\nThe design implements path-based ownership for entities that have a `User 1:N Entity` relationship. For example, `Commission` are stored under `users/{userId}/commissions/{commissionId}`.\n\nTo support QAPs (secure `list` operations), the structure avoids using rules as filters. Access control is enforced at the path level, ensuring that users can only list documents they are authorized to access. For collaborative data models, a membership map (`members: {uid1: \"role\", uid2: \"role\"}`) will be used.\n\nTo enhance debuggability, explicit state modeling is applied using a `status` field, along with semantic naming conventions for collections and fields."
+  }
+}
