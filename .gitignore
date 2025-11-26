@@ -43,3 +43,12 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# ...altre regole...
+.next/
+out/
+build/
+dist/
+cache/
+trace
+*.log
